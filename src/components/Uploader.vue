@@ -65,6 +65,7 @@
                 drop-placeholder="Ejtse ide a fájlt..."
                 browse-text="Tallózás"
                 size="lg"
+                ref="attachment"
             />
           </b-form-group>
 
@@ -81,9 +82,9 @@
           <div v-if="confirmed" class="text-center rounded">
             <div class="mb-3">Feltöltés folyamatban...</div>
             <b-progress
-                min="1"
-                max="20"
-                :value="2"
+                min="0"
+                max="99"
+                :value="uploadProgress"
                 variant="success"
                 v-if="uploadProgress !== null"
             />
@@ -116,6 +117,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: "Uploader",
   data() {
@@ -153,6 +156,44 @@ export default {
     onOverlayConfirm() {
       this.uploadInProgress = true;
       this.confirmed = true;
+      this.performUpload();
+    },
+    performUpload() {
+
+
+      let formData = new FormData();
+      formData.append('name', this.form.name);
+      formData.append('address', this.form.address);
+      formData.append('text', this.form.text);
+
+      if (this.form.attachment) {
+        formData.append('attachment', this.form.attachment);
+      }
+
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        onUploadProgress: function (progressEvent) {
+          let uploadedPercent = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+          if (uploadedPercent === 100) {
+            this.uploadProgress = null; // show the spinner instead
+          } else {
+            this.uploadProgress = uploadedPercent;
+          }
+        },
+        baseURL: process.env.VUE_APP_API_LOCATION
+      }
+
+      axios.post('/upload',
+          formData,
+          config
+      ).then(function () {
+        console.log('SUCCESS!!');
+      }).catch(function () {
+        console.log('FAILURE!!');
+      });
+
     }
   }
 }
