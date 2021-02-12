@@ -55,22 +55,36 @@
           <b-form-group
               id="input-group-attachment"
               label="Csatolmány:"
-              label-for="attachment"
+              label-for="input-attachment"
               description="(Max.: 512Mb)"
           >
             <b-form-file
-                id="attachment"
+                id="input-attachment"
                 v-model="form.attachment"
                 placeholder="Válasszon vagy ejtsen ide egy fájlt..."
                 drop-placeholder="Ejtse ide a fájlt..."
                 browse-text="Tallózás"
                 size="lg"
-                ref="attachment"
             />
           </b-form-group>
 
+          <b-form-group
+              id="input-group-rechaptcha"
+              label="Ellenőrzés:"
+              label-for="input-captcha"
+          >
+            <vue-recaptcha
+                id="input-captcha"
+                :sitekey="reChaptcha.siteKey"
+                :loadRecaptchaScript="true"
+                @verify="reChaptchaVerified"
+                @expired="reChaptcha.response = null"
+            />
+          </b-form-group>
+
+
           <div class="d-flex justify-content-center">
-            <b-button ref="submit" type="submit" variant="primary">Beküldés!</b-button>
+            <b-button ref="submit" type="submit" variant="primary" :disabled="!formValid">Beküldés!</b-button>
           </div>
         </b-form>
 
@@ -127,6 +141,7 @@
 
 <script>
 import axios from 'axios';
+import VueRecaptcha from 'vue-recaptcha';
 
 const UploaderStates = {
   EDITING: 1,
@@ -138,6 +153,9 @@ const UploaderStates = {
 
 export default {
   name: "Uploader",
+  components: {
+    VueRecaptcha
+  },
   data() {
     return {
       UploaderStates,
@@ -147,8 +165,13 @@ export default {
         text: null,
         attachment: null
       },
+      reChaptcha: {
+        siteKey: process.env.VUE_APP_RECHAPTCHA_SITEKEY,
+        response: null
+      },
       uploadProgress: null,
-      uploaderStatus: UploaderStates.EDITING
+      uploaderStatus: UploaderStates.EDITING,
+
     }
   },
   methods: {
@@ -169,6 +192,9 @@ export default {
     onOverlayConfirm() {
       this.performUpload();
     },
+    reChaptchaVerified(response) {
+      this.reChaptcha.response = response;
+    },
     performUpload() {
       this.uploadProgress = null;
       this.uploaderStatus = UploaderStates.UPLOADING;
@@ -177,6 +203,7 @@ export default {
       formData.append('name', this.form.name);
       formData.append('address', this.form.address);
       formData.append('text', this.form.text);
+      formData.append('g-recaptcha-response', this.reChaptcha.response);
 
       if (this.form.attachment) {
         formData.append('attachment', this.form.attachment);
@@ -205,6 +232,14 @@ export default {
         this.uploaderStatus = UploaderStates.FAIL;
       });
 
+    }
+  },
+  computed: {
+    formValid() {
+      return this.reChaptcha.response &&
+          this.form.name &&
+          this.form.text &&
+          this.form.address;
     }
   }
 }
