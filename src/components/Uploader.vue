@@ -74,6 +74,7 @@
               label-for="input-captcha"
           >
             <vue-recaptcha
+                v-if="uploaderState === UploaderStates.EDITING"
                 id="input-captcha"
                 :sitekey="reChaptcha.siteKey"
                 :loadRecaptchaScript="true"
@@ -91,11 +92,11 @@
       </b-card>
 
 
-      <b-overlay :show="uploaderStatus !== UploaderStates.EDITING" no-wrap @shown="onOverlayShown"
+      <b-overlay :show="uploaderState !== UploaderStates.EDITING" no-wrap @shown="onOverlayShown"
                  @hidden="onOverlayHidden">
         <template #overlay>
           <!-- Uploader progress -->
-          <div v-if="uploaderStatus === UploaderStates.UPLOADING" class="text-center rounded">
+          <div v-if="uploaderState === UploaderStates.UPLOADING" class="text-center rounded">
             <div class="mb-3">Feltöltés folyamatban...</div>
             <b-progress
                 v-if="uploadProgress !== null || uploadProgress === 100"
@@ -108,7 +109,7 @@
           </div>
           <!-- Confirmation -->
           <div
-              v-else-if="uploaderStatus === UploaderStates.CONFIRMING"
+              v-else-if="uploaderState === UploaderStates.CONFIRMING"
               ref="overlay_confirm_dialog"
               tabindex="-1"
               role="dialog"
@@ -126,12 +127,18 @@
             </div>
           </div>
           <!-- Upload completed -->
-          <div v-else-if="uploaderStatus === UploaderStates.SUCCESS">
-            kész
+          <div v-else-if="uploaderState === UploaderStates.SUCCESS" class="text-center">
+            <p><b-icon variant="success" icon="check-circle" font-scale="4"/></p>
+            <p><strong>Sikeres feltöltés!</strong></p>
           </div>
           <!-- Upload failed -->
-          <div v-else>
-            nemjo
+          <div v-else class="text-center">
+            <p><b-icon variant="danger" icon="x-circle" font-scale="4"/></p>
+            <p><strong>Sikertelen feltöltés!</strong></p>
+            <p>Úgy tűnik, valami hiba történt, próbáld újra később.</p>
+            <div class="d-flex justify-content-center">
+              <b-button variant="outline-warning" @click="onOverlayCancel">Vissza</b-button>
+            </div>
           </div>
         </template>
       </b-overlay>
@@ -170,7 +177,7 @@ export default {
         response: null
       },
       uploadProgress: null,
-      uploaderStatus: UploaderStates.EDITING,
+      uploaderState: UploaderStates.EDITING,
 
     }
   },
@@ -184,10 +191,11 @@ export default {
       this.$refs.submit.focus()
     },
     onSubmit() {
-      this.uploaderStatus = UploaderStates.CONFIRMING;
+      this.uploaderState = UploaderStates.CONFIRMING;
     },
     onOverlayCancel() {
-      this.uploaderStatus = UploaderStates.EDITING;
+      this.reChaptcha.response = null;
+      this.uploaderState = UploaderStates.EDITING;
     },
     onOverlayConfirm() {
       this.performUpload();
@@ -197,7 +205,7 @@ export default {
     },
     performUpload() {
       this.uploadProgress = null;
-      this.uploaderStatus = UploaderStates.UPLOADING;
+      this.uploaderState = UploaderStates.UPLOADING;
 
       let formData = new FormData();
       formData.append('name', this.form.name);
@@ -227,9 +235,9 @@ export default {
           '/upload', formData, config
       ).then(() => {
         // TODO: check response
-        this.uploaderStatus = UploaderStates.SUCCESS;
+        this.uploaderState = UploaderStates.SUCCESS;
       }).catch(() => {
-        this.uploaderStatus = UploaderStates.FAIL;
+        this.uploaderState = UploaderStates.FAIL;
       });
 
     }
