@@ -77,21 +77,24 @@
       </b-card>
 
 
-      <b-overlay :show="showOverlay" no-wrap @shown="onOverlayShown" @hidden="onOverlayHidden">
+      <b-overlay :show="uploaderStatus !== UploaderStates.EDITING" no-wrap @shown="onOverlayShown"
+                 @hidden="onOverlayHidden">
         <template #overlay>
-          <div v-if="confirmed" class="text-center rounded">
+          <!-- Uploader progress -->
+          <div v-if="uploaderStatus === UploaderStates.UPLOADING" class="text-center rounded">
             <div class="mb-3">Feltöltés folyamatban...</div>
             <b-progress
+                v-if="uploadProgress !== null || uploadProgress === 100"
                 min="0"
-                max="99"
+                max="100"
                 :value="uploadProgress"
                 variant="success"
-                v-if="uploadProgress !== null"
             />
             <b-spinner v-else/>
           </div>
+          <!-- Confirmation -->
           <div
-              v-else
+              v-else-if="uploaderStatus === UploaderStates.CONFIRMING"
               ref="overlay_confirm_dialog"
               tabindex="-1"
               role="dialog"
@@ -108,10 +111,16 @@
               <b-button variant="outline-success" @click="onOverlayConfirm">Feltöltés</b-button>
             </div>
           </div>
+          <!-- Upload completed -->
+          <div v-else-if="uploaderStatus === UploaderStates.SUCCESS">
+            kész
+          </div>
+          <!-- Upload failed -->
+          <div v-else>
+            nemjo
+          </div>
         </template>
       </b-overlay>
-
-
     </b-col>
   </b-row>
 </template>
@@ -119,47 +128,50 @@
 <script>
 import axios from 'axios';
 
+const UploaderStates = {
+  EDITING: 1,
+  CONFIRMING: 2,
+  UPLOADING: 3,
+  SUCCESS: 4,
+  FAIL: 5
+}
+
 export default {
   name: "Uploader",
   data() {
     return {
+      UploaderStates,
       form: {
         name: null,
         address: null,
         text: null,
         attachment: null
       },
-      uploadInProgress: false,
       uploadProgress: null,
-      confirmed: false,
-      showOverlay: false
+      uploaderStatus: UploaderStates.EDITING
     }
   },
   methods: {
     onOverlayShown() {
-      this.$refs.overlay_confirm_dialog.focus()
+      if (this.$refs.overlay_confirm_dialog) {
+        this.$refs.overlay_confirm_dialog.focus()
+      }
     },
     onOverlayHidden() {
       this.$refs.submit.focus()
     },
     onSubmit() {
-      this.uploadProgress = null;
-      this.uploadInProgress = false;
-      this.confirmed = false;
-      // Show the overlay
-      this.showOverlay = true;
+      this.uploaderStatus = UploaderStates.CONFIRMING;
     },
     onOverlayCancel() {
-      this.confirmed = false;
-      this.showOverlay = false;
+      this.uploaderStatus = UploaderStates.EDITING;
     },
     onOverlayConfirm() {
-      this.uploadInProgress = true;
-      this.confirmed = true;
       this.performUpload();
     },
     performUpload() {
-
+      this.uploadProgress = null;
+      this.uploaderStatus = UploaderStates.UPLOADING;
 
       let formData = new FormData();
       formData.append('name', this.form.name);
@@ -171,27 +183,26 @@ export default {
       }
 
       const config = {
+        baseURL: process.env.VUE_APP_API_LOCATION,
         headers: {
           'Content-Type': 'multipart/form-data'
         },
-        onUploadProgress: function (progressEvent) {
-          let uploadedPercent = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-          if (uploadedPercent === 100) {
-            this.uploadProgress = null; // show the spinner instead
-          } else {
-            this.uploadProgress = uploadedPercent;
-          }
+        onUploadProgress: (progressEvent) => {
+          // 100 will probably mean that the server side processing is ongoing, so we will show a spinner during that
+          this.uploadProgress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
         },
-        baseURL: process.env.VUE_APP_API_LOCATION
+        validateStatus: (status) => {
+          return status === 201; // Created
+        }
       }
 
-      axios.post('/upload',
-          formData,
-          config
-      ).then(function () {
-        console.log('SUCCESS!!');
-      }).catch(function () {
-        console.log('FAILURE!!');
+      axios.post(
+          '/upload', formData, config
+      ).then(() => {
+        // TODO: check response
+        this.uploaderStatus = UploaderStates.SUCCESS;
+      }).catch(() => {
+        this.uploaderStatus = UploaderStates.FAIL;
       });
 
     }
