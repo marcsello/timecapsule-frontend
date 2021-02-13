@@ -11,7 +11,7 @@
 
     <div id="footer">
       <b-container>
-        Lábléc cumók
+        <footer-content/>
       </b-container>
     </div>
 
@@ -21,11 +21,12 @@
 
 <script>
 import Navbar from "@/components/Navbar";
+import FooterContent from "@/components/FooterContent"
 
 export default {
   name: "App",
   components: {
-    Navbar
+    Navbar, FooterContent
   }
 }
 
