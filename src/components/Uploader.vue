@@ -145,6 +145,7 @@ export default {
       ).then(() => {
         // TODO: check response
         this.uploaderState = UploaderStates.SUCCESS;
+        localStorage.removeItem('form'); // TODO: Ez nagyon nem lesz itt jó
       }).catch(() => {
         this.uploaderState = UploaderStates.FAIL;
       });

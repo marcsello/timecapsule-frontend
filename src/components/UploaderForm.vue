@@ -93,8 +93,6 @@ import _ from 'lodash';
 
 const LOCAL_STORAGE_KEY = "form";
 
-// TODO: Solve reset local storage
-
 export default {
   name: "UploaderForm",
   components: {
