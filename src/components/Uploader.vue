@@ -6,94 +6,13 @@
         <h1>
           Feltöltés
         </h1>
-        <b-form @submit.prevent="onSubmit">
 
-          <b-form-group
-              id="input-group-name"
-              label="Név:"
-              label-for="input-name"
-          >
-            <b-form-input
-                id="input-name"
-                v-model="form.name"
-                type="text"
-                placeholder=""
-                required
-            />
-          </b-form-group>
-
-
-          <b-form-group
-              id="input-group-address"
-              label="Nagyatádi cím:"
-              label-for="input-address"
-          >
-            <b-form-input
-                id="input-address"
-                v-model="form.address"
-                type="text"
-                placeholder=""
-                required
-            />
-          </b-form-group>
-
-
-          <b-form-group
-              id="input-group-text"
-              label="Üzenet:"
-              label-for="input-text"
-          >
-            <b-form-textarea
-                id="input-text"
-                v-model="form.text"
-                placeholder="Írjon valamit..."
-                rows="5"
-                max-rows="8"
-            />
-          </b-form-group>
-
-          <b-form-group
-              id="input-group-attachment"
-              label="Csatolmány:"
-              label-for="input-attachment"
-              description="(Max.: 512Mb)"
-          >
-            <b-form-file
-                id="input-attachment"
-                v-model="form.attachment"
-                placeholder="Válasszon vagy ejtsen ide egy fájlt..."
-                drop-placeholder="Ejtse ide a fájlt..."
-                browse-text="Tallózás"
-                size="lg"
-            />
-          </b-form-group>
-
-          <b-form-group
-              id="input-group-rechaptcha"
-              label="Ellenőrzés:"
-              label-for="input-captcha"
-          >
-            <vue-recaptcha
-                v-if="uploaderState === UploaderStates.EDITING"
-                id="input-captcha"
-                :sitekey="reChaptcha.siteKey"
-                :loadRecaptchaScript="true"
-                @verify="reChaptchaVerified"
-                @expired="reChaptcha.response = null"
-            />
-          </b-form-group>
-
-
-          <div class="d-flex justify-content-center">
-            <b-button ref="submit" type="submit" variant="primary" :disabled="!formValid">Beküldés!</b-button>
-          </div>
-        </b-form>
+        <uploader-form :active="uploaderState === UploaderStates.EDITING" @submit="onSubmit"/>
 
       </b-card>
 
 
-      <b-overlay :show="uploaderState !== UploaderStates.EDITING" no-wrap @shown="onOverlayShown"
-                 @hidden="onOverlayHidden">
+      <b-overlay :show="uploaderState !== UploaderStates.EDITING" no-wrap @shown="onOverlayShown">
         <template #overlay>
           <!-- Uploader progress -->
           <div v-if="uploaderState === UploaderStates.UPLOADING" class="text-center rounded">
@@ -152,8 +71,7 @@
 
 <script>
 import axios from 'axios';
-import VueRecaptcha from 'vue-recaptcha';
-import _ from 'lodash';
+import UploaderForm from "@/components/UploaderForm";
 
 const UploaderStates = {
   EDITING: 1,
@@ -163,29 +81,18 @@ const UploaderStates = {
   FAIL: 5
 }
 
-const LOCAL_STORAGE_KEY = "form";
-
 export default {
   name: "Uploader",
   components: {
-    VueRecaptcha
+    UploaderForm
   },
   data() {
     return {
       UploaderStates,
-      form: {
-        name: null,
-        address: null,
-        text: null,
-        attachment: null
-      },
-      reChaptcha: {
-        siteKey: process.env.VUE_APP_RECHAPTCHA_SITEKEY,
-        response: null
-      },
       uploadProgress: null,
       uploaderState: UploaderStates.EDITING,
-
+      form: null,
+      reChaptchaResponse: null
     }
   },
   methods: {
@@ -194,31 +101,26 @@ export default {
         this.$refs.overlay_confirm_dialog.focus()
       }
     },
-    onOverlayHidden() {
-      this.$refs.submit.focus()
-    },
-    onSubmit() {
+    onSubmit(form, reChaptchaResponse) {
+      this.form = form;
+      this.reChaptchaResponse = reChaptchaResponse;
       this.uploaderState = UploaderStates.CONFIRMING;
     },
     onOverlayCancel() {
-      this.reChaptcha.response = null;
       this.uploaderState = UploaderStates.EDITING;
     },
     onOverlayConfirm() {
       this.performUpload();
-    },
-    reChaptchaVerified(response) {
-      this.reChaptcha.response = response;
     },
     performUpload() {
       this.uploadProgress = null;
       this.uploaderState = UploaderStates.UPLOADING;
 
       let formData = new FormData();
-      formData.append('name', this.form.name);
-      formData.append('address', this.form.address);
-      formData.append('text', this.form.text);
-      formData.append('g-recaptcha-response', this.reChaptcha.response);
+      formData.append('name', this.form.textual.name);
+      formData.append('address', this.form.textual.address);
+      formData.append('text', this.form.textual.text);
+      formData.append('g-recaptcha-response', this.reChaptchaResponse);
 
       if (this.form.attachment) {
         formData.append('attachment', this.form.attachment);
@@ -247,37 +149,6 @@ export default {
         this.uploaderState = UploaderStates.FAIL;
       });
 
-    },
-    saveForm() {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(this.form));
-    }
-  },
-  computed: {
-    formValid() {
-      return this.reChaptcha.response &&
-          this.form.name &&
-          this.form.text &&
-          this.form.address;
-    }
-  },
-  watch: {
-    form: {
-      handler() {
-        this.debouncedSave();
-      },
-      deep: true
-    }
-  },
-  created() {
-    // Used to schedule save operations
-    this.debouncedSave = _.debounce(this.saveForm, 2000);
-
-    // Load the last saved state
-    const saved_form = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (saved_form) {
-      let parsed_saved_form = JSON.parse(saved_form);
-      delete parsed_saved_form.attachment;
-      this.form = parsed_saved_form;
     }
   }
 }

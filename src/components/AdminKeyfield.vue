@@ -37,9 +37,6 @@ export default {
       }
     }
   },
-  event: [
-    'submit'
-  ],
   methods: {
     onSubmit() {
       this.$emit('submit',this.form.key);

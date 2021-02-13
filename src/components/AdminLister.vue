@@ -18,10 +18,7 @@ export default {
         return []
       }
     }
-  },
-  event: [
-      'showItem'
-  ]
+  }
 }
 </script>
 
