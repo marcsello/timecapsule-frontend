@@ -1,7 +1,7 @@
 <template>
   <b-row>
     <b-col>
-      Copyright 2021 © Pünkösd Marcell
+      © 2021 Pünkösd Marcell
     </b-col>
     <b-col>
       <a href="#">Adatvédelmi irányelvek</a>
