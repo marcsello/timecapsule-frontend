@@ -128,12 +128,16 @@
           </div>
           <!-- Upload completed -->
           <div v-else-if="uploaderState === UploaderStates.SUCCESS" class="text-center">
-            <p><b-icon variant="success" icon="check-circle" font-scale="4"/></p>
+            <p>
+              <b-icon variant="success" icon="check-circle" font-scale="4"/>
+            </p>
             <p><strong>Sikeres feltöltés!</strong></p>
           </div>
           <!-- Upload failed -->
           <div v-else class="text-center">
-            <p><b-icon variant="danger" icon="x-circle" font-scale="4"/></p>
+            <p>
+              <b-icon variant="danger" icon="x-circle" font-scale="4"/>
+            </p>
             <p><strong>Sikertelen feltöltés!</strong></p>
             <p>Úgy tűnik, valami hiba történt, próbáld újra később.</p>
             <div class="d-flex justify-content-center">
@@ -149,6 +153,7 @@
 <script>
 import axios from 'axios';
 import VueRecaptcha from 'vue-recaptcha';
+import _ from 'lodash';
 
 const UploaderStates = {
   EDITING: 1,
@@ -157,6 +162,8 @@ const UploaderStates = {
   SUCCESS: 4,
   FAIL: 5
 }
+
+const LOCAL_STORAGE_KEY = "form";
 
 export default {
   name: "Uploader",
@@ -240,6 +247,9 @@ export default {
         this.uploaderState = UploaderStates.FAIL;
       });
 
+    },
+    saveForm() {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(this.form));
     }
   },
   computed: {
@@ -248,6 +258,26 @@ export default {
           this.form.name &&
           this.form.text &&
           this.form.address;
+    }
+  },
+  watch: {
+    form: {
+      handler() {
+        this.debouncedSave();
+      },
+      deep: true
+    }
+  },
+  created() {
+    // Used to schedule save operations
+    this.debouncedSave = _.debounce(this.saveForm, 2000);
+
+    // Load the last saved state
+    const saved_form = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (saved_form) {
+      let parsed_saved_form = JSON.parse(saved_form);
+      delete parsed_saved_form.attachment;
+      this.form = parsed_saved_form;
     }
   }
 }
