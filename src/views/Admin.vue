@@ -1,5 +1,34 @@
 <template>
   <div id="admin">
+
+    <b-modal id="modal-upload-content" size="lg" scrollable centered ok-only :title="modalTitle">
+      <div id="modal-upload-content-content">
+        <p><b>Azonosító:</b></p>
+        <p>{{ displayed_upload.id }}</p>
+
+        <p><b>Feltöltés időpontja:</b></p>
+        <p>{{ displayed_upload.upload_date }}</p>
+
+        <p><b>Feltöltő neve:</b></p>
+        <p>{{ displayed_upload.name }}</p>
+
+        <p><b>Feltöltő címe:</b></p>
+        <p>{{ displayed_upload.address }}</p>
+
+        <p><b>Az üzenet szövege:</b></p>
+        <p id="displayed-upload-text">{{ displayed_upload.text }}</p>
+        <div v-if="displayed_upload.have_attachment">
+          <p><b>Csatolmány:</b></p>
+          <p>Hash: {{ displayed_upload.attachment_hash }}</p>
+          <p>Fájlnév: {{ displayed_upload.attachment_original_filename }}</p>
+          <div class="d-flex justify-content-center">
+            <!-- TODO: Solve download -->
+            <b-button variant="primary">Letöltés</b-button>
+          </div>
+        </div>
+      </div>
+    </b-modal>
+
     <b-container>
       <admin-keyfield @submit="onSubmit"/>
       <admin-lister :uploads="uploads" @showItem="onShowItem"/>
@@ -20,7 +49,20 @@ export default {
   data() {
     return {
       key: null,
-      uploads: []
+      uploads: [],
+      displayed_upload: {
+        id: null,
+        name: null,
+        address: null,
+        attachment_hash: null,
+        attachment_original_filename: null,
+        attachment_url: null,
+        have_attachment: false,
+        text: null,
+        text_length: 0,
+        upload_date: null
+      }
+
     }
   },
   methods: {
@@ -64,14 +106,26 @@ export default {
       }).catch(() => this.uploads = []);
     },
     onShowItem(id) {
-      this.adminGet(`/upload/${id}`).then(() => {
-        // TODO
+      this.adminGet(`/upload/${id}`).then((data) => {
+        this.displayed_upload = data;
+        this.$bvModal.show('modal-upload-content');
       }).catch(() => this.uploads = []);
     },
+  },
+  computed: {
+    modalTitle() {
+      return `${this.displayed_upload.id}. számú feltöltés ${this.displayed_upload.name} által`
+    }
   }
 }
 </script>
 
 <style scoped>
+#modal-upload-content-content {
+  overflow-wrap: break-word;
+}
 
+#displayed-upload-text {
+  white-space: pre-wrap;
+}
 </style>
