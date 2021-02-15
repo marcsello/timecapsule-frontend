@@ -120,7 +120,6 @@ export default {
       formData.append('name', this.form.textual.name);
       formData.append('address', this.form.textual.address);
       formData.append('text', this.form.textual.text);
-      formData.append('g-recaptcha-response', this.reChaptchaResponse);
 
       if (this.form.attachment) {
         formData.append('attachment', this.form.attachment);
@@ -129,7 +128,8 @@ export default {
       const config = {
         baseURL: process.env.VUE_APP_API_LOCATION,
         headers: {
-          'Content-Type': 'multipart/form-data'
+          'Content-Type': 'multipart/form-data',
+          'X-G-Recaptcha-Response': this.reChaptchaResponse
         },
         onUploadProgress: (progressEvent) => {
           // 100 will probably mean that the server side processing is ongoing, so we will show a spinner during that
