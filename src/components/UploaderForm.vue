@@ -16,10 +16,9 @@
       />
     </b-form-group>
 
-
     <b-form-group
         id="input-group-address"
-        label="Nagyatádi cím:"
+        label="Lakcím:"
         label-for="input-address"
     >
       <b-form-input
@@ -32,6 +31,34 @@
       />
     </b-form-group>
 
+    <b-form-group
+        id="input-group-email"
+        label="e-mail cím:"
+        label-for="input-email"
+    >
+      <b-form-input
+          id="input-email"
+          v-model="form.textual.email"
+          type="email"
+          placeholder=""
+          :disabled="!active"
+      />
+    </b-form-group>
+
+    <b-form-group
+        id="input-group-phone"
+        label="Telefon:"
+        label-for="input-phone"
+    >
+      <b-form-input
+          id="input-phone"
+          v-model="form.textual.phone"
+          type="text"
+          placeholder=""
+          pattern="^\+?[0-9]{6,13}$"
+          :disabled="!active"
+      />
+    </b-form-group>
 
     <b-form-group
         id="input-group-text"
@@ -114,6 +141,8 @@ export default {
         textual: {
           name: null,
           address: null,
+          email: null,
+          phone: null,
           text: null
         },
         attachment: null

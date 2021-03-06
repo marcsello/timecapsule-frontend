@@ -116,14 +116,26 @@ export default {
       this.uploadProgress = null;
       this.uploaderState = UploaderStates.UPLOADING;
 
+      // Compile form data
       let formData = new FormData();
       formData.append('name', this.form.textual.name);
       formData.append('address', this.form.textual.address);
+
+      if (this.form.textual.email) {
+        formData.append('email', this.form.textual.email);
+      }
+
+      if (this.form.textual.phone) {
+        formData.append('phone', this.form.textual.phone);
+      }
+
       formData.append('text', this.form.textual.text);
 
       if (this.form.attachment) {
         formData.append('attachment', this.form.attachment);
       }
+
+      // Prepare upload
 
       const config = {
         baseURL: process.env.VUE_APP_API_LOCATION,
@@ -139,6 +151,8 @@ export default {
           return status === 201; // Created
         }
       }
+
+      // Perform upload
 
       axios.post(
           '/upload', formData, config
