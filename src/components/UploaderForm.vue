@@ -70,14 +70,16 @@
         label="Ellenőrzés:"
         label-for="input-captcha"
     >
-      <vue-recaptcha
-          v-if="active"
-          id="input-captcha"
-          :sitekey="reChaptcha.siteKey"
-          :loadRecaptchaScript="true"
-          @verify="reChaptchaVerified"
-          @expired="reChaptcha.response = null"
-      />
+      <div id="input-captcha-placeholder">
+        <vue-recaptcha
+            v-if="active"
+            id="input-captcha"
+            :sitekey="reChaptcha.siteKey"
+            :loadRecaptchaScript="true"
+            @verify="reChaptchaVerified"
+            @expired="reChaptcha.response = null"
+        />
+      </div>
     </b-form-group>
 
 
@@ -169,5 +171,8 @@ export default {
 </script>
 
 <style scoped>
-
+#input-captcha-placeholder {
+  height: 78px;
+  width: 304px;
+}
 </style>
