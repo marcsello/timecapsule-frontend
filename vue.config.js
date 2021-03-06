@@ -20,11 +20,11 @@ module.exports = {
                 }
 
                 return options
-            }),
-            config.plugin('html')
-                .tap(args => {
-                    args[0].title = "50 éve város Nagyatád (feltöltő)"
-                    return args
-                })
+            });
+        config.plugin('html')
+            .tap(args => {
+                args[0].title = "50 éve város Nagyatád (feltöltő)"
+                return args
+            });
     }
 }
