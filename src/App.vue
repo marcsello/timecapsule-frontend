@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <privacy-policy-popup/>
 
     <navbar/>
 
@@ -22,11 +23,12 @@
 <script>
 import Navbar from "@/components/Navbar";
 import FooterContent from "@/components/FooterContent"
+import PrivacyPolicyPopup from "@/components/PrivacyPolicyPopup";
 
 export default {
   name: "App",
   components: {
-    Navbar, FooterContent
+    Navbar, FooterContent, PrivacyPolicyPopup
   }
 }
 

@@ -4,7 +4,7 @@
       © 2021 Pünkösd Marcell
     </b-col>
     <b-col>
-      <a href="#">Adatvédelmi irányelvek</a>
+      <b-link v-b-modal.privacy-policy-popup>Adatkezelési tájékoztató</b-link>
     </b-col>
   </b-row>
 </template>

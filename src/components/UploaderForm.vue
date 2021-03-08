@@ -169,7 +169,7 @@
               :disabled="!active"
               :state="getValidationState(validationContext)"
           >
-            Az <a href="#">adatkezelési tájékoztatatóban</a> foglaltakat tudomásul vettem és elfogadom. <span
+            Az <b-link v-b-modal.privacy-policy-popup>adatkezelési tájékoztatatóban</b-link> foglaltakat tudomásul vettem és elfogadom. <span
               class="red-star">*</span>
           </b-form-checkbox>
           <b-form-invalid-feedback :state="getValidationState(validationContext)" id="input-privacy-live-feedback">
