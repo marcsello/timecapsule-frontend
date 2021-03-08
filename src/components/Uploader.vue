@@ -37,7 +37,7 @@
               class="text-center p-3"
           >
             <p><strong id="form-confirm-label">Biztos vagy benne?</strong></p>
-            <p>Miután a feltöltés gombra kattintottál, már nincs lehetőséged visszavonni vagy módosítani a beadást!</p>
+            <p>Miután a feltöltés gombra kattintott, már nincs lehetősége visszavonni vagy módosítani a leadást!</p>
             <div class="d-flex justify-content-center">
               <b-button variant="outline-danger" class="mr-3" @click="onOverlayCancel">
                 Mégse
@@ -51,6 +51,7 @@
               <b-icon variant="success" icon="check-circle" font-scale="4"/>
             </p>
             <p><strong>Sikeres feltöltés!</strong></p>
+            <p>Köszönjük, hogy személyes üzenetével hozzájárul ünnepi programjaink gazdagabbá tételéhez!</p>
           </div>
           <!-- Upload failed -->
           <div v-else class="text-center">
@@ -58,7 +59,7 @@
               <b-icon variant="danger" icon="x-circle" font-scale="4"/>
             </p>
             <p><strong>Sikertelen feltöltés!</strong></p>
-            <p>Úgy tűnik, valami hiba történt, próbáld újra később.</p>
+            <p>Úgy tűnik, valami hiba történt, próbálja újra később.</p>
             <div class="d-flex justify-content-center">
               <b-button variant="outline-warning" @click="onOverlayCancel">Vissza</b-button>
             </div>

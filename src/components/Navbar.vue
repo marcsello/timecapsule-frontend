@@ -2,7 +2,7 @@
   <b-navbar toggleable="sm" type="light" variant="light" fixed="none">
 
     <b-navbar-brand>
-      Az esemény neve?
+      NAGYATÁD 50 IDŐKAPSZULA
     </b-navbar-brand>
 
 
