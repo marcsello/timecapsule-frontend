@@ -3,7 +3,7 @@
     <b-form novalidate @submit.prevent="handleSubmit(onSubmit)">
       <validation-provider
           name="name"
-          rules="required"
+          rules="required|max:128"
           v-slot="validationContext"
       >
         <b-form-group
@@ -28,7 +28,7 @@
 
       <validation-provider
           name="address"
-          rules="required"
+          rules="required|max:256"
           v-slot="validationContext"
       >
         <b-form-group
@@ -53,7 +53,7 @@
 
       <validation-provider
           name="email"
-          rules="email"
+          rules="email|max:255"
           v-slot="validationContext"
       >
         <b-form-group
@@ -247,7 +247,7 @@ extend('phone', {
 });
 extend('max', {
   ...max,
-  message: "A szöveg túl hosszú!"
+  message: "Túl hosszú!"
 });
 extend('must_accept', {
   validate(value) {
