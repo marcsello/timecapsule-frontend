@@ -10,8 +10,9 @@
         <div>
           {{ item.name }}
           <b-badge
-              :variant="item.size > maxSizePerFile ? 'danger' : 'secondary'"
-          >{{ bytesToSize(item.size) }}</b-badge>
+              :variant="item.size > maxSizePerItem ? 'danger' : 'secondary'"
+          >{{ bytesToSize(item.size) }}
+          </b-badge>
         </div>
         <b-button size="sm" variant="outline-danger" @click="removeItem(idx)" :disabled="disabled">
           <b-icon icon="trash"/>
@@ -29,7 +30,8 @@
       >
 
 
-        <input :accept="accept" :disabled="disabled" ref="fileInputField" type="file" id="items" multiple @change="onChange">
+        <input :accept="accept" :disabled="disabled" ref="fileInputField" type="file" id="items" multiple
+               @change="onChange">
         <h3>{{ uploaderHelpText }}</h3>
         <h4>Vagy kattintson a tallózáshoz</h4>
 
@@ -40,10 +42,15 @@
 </template>
 
 <script>
+import _ from 'lodash';
 
 export default {
+  model: {
+    prop: 'items',
+    event: 'change'
+  },
   props: {
-    maxSizePerFile: {
+    maxSizePerItem: {
       type: Number,
       default: 10485760 // 10MB
     },
@@ -62,21 +69,26 @@ export default {
     disabled: {
       type: Boolean,
       default: false
+    },
+    items: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
     return {
-      dragging: false,
-      items: []
+      dragging: false
     }
   },
   methods: {
     onChange(e) {
       this.dragging = false;
       let files = e.target.files || e.dataTransfer.files;
+      let mutableItems = _.clone(this.items);
       files.forEach((file) => {
-        this.items.push(file);
+        mutableItems.push(file);
       });
+      this.$emit('change', mutableItems);
       this.$refs.fileInputField.value = ""; // reset
     },
     bytesToSize(bytes) {
@@ -88,7 +100,9 @@ export default {
       return (bytes / Math.pow(1024, i)).toFixed(2) + ' ' + sizes[i];
     },
     removeItem(idx) {
-      this.items.splice(idx, 1);
+      let mutableItems = _.clone(this.items);
+      mutableItems.splice(idx, 1);
+      this.$emit('change', mutableItems);
     },
     getListItemVariant(idx) {
       return (idx + 1) > this.maxItems ? 'warning' : ''
