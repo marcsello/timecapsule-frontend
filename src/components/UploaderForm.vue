@@ -189,13 +189,13 @@
           <div id="input-captcha-placeholder">
             <!-- vue-rechaptcha does not use the v-model property, it's here only for vee-validate -->
             <vue-recaptcha
-                v-if="active"
                 id="input-captcha"
                 :sitekey="reChaptcha.siteKey"
                 :loadRecaptchaScript="true"
                 @verify="reChaptchaVerified"
                 @expired="reChaptchaExpired"
                 v-model="reChaptchaValid"
+                v-show="active"
             />
           </div>
           <b-form-invalid-feedback :state="getValidationState(validationContext)" id="input-privacy-live-feedback">
@@ -315,7 +315,7 @@ export default {
 
       formData.append('text', this.form.textual.text);
 
-      this.attachments.forEach((attachment, idx) => {
+      this.form.attachments.forEach((attachment, idx) => {
         formData.append(`attachment[${idx}]`, attachment);
       });
 

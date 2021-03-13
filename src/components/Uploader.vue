@@ -22,7 +22,7 @@
           <div v-if="uploaderState === UploaderStates.UPLOADING" class="text-center rounded">
             <div class="mb-3">Feltöltés folyamatban...</div>
             <b-progress
-                v-if="uploadProgress !== null || uploadProgress === 100"
+                v-if="uploadProgress !== null || uploadProgress < 100"
                 min="0"
                 max="100"
                 :value="uploadProgress"
@@ -40,7 +40,7 @@
               aria-labelledby="form-confirm-label"
               class="text-center p-3"
           >
-            <p><strong id="form-confirm-label">Biztos vagy benne?</strong></p>
+            <p><strong id="form-confirm-label">Biztos benne?</strong></p>
             <p>Miután a feltöltés gombra kattintott, már nincs lehetősége visszavonni vagy módosítani a leadást!</p>
             <div class="d-flex justify-content-center">
               <b-button variant="outline-danger" class="mr-3" @click="onOverlayCancel">
