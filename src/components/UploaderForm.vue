@@ -138,8 +138,10 @@
             description="Kép vagy szöveg fájlok, max 10 Mb/darab"
         >
           <multiple-file-select
-            id="input-attachment"
-            v-model="form.attachments"
+              id="input-attachment"
+              v-model="form.attachments"
+              :disabled="!active"
+              @change="validationContext.validate($event)"
           />
           <b-form-invalid-feedback id="input-attachement-live-feedback">
             {{ validationContext.errors[0] }}
@@ -162,7 +164,9 @@
               :disabled="!active"
               :state="getValidationState(validationContext)"
           >
-            Az <b-link v-b-modal.privacy-policy-popup>adatkezelési tájékoztatatóban</b-link> foglaltakat tudomásul vettem és elfogadom. <span
+            Az
+            <b-link v-b-modal.privacy-policy-popup>adatkezelési tájékoztatatóban</b-link>
+            foglaltakat tudomásul vettem és elfogadom. <span
               class="red-star">*</span>
           </b-form-checkbox>
           <b-form-invalid-feedback :state="getValidationState(validationContext)" id="input-privacy-live-feedback">
@@ -190,7 +194,7 @@
                 :sitekey="reChaptcha.siteKey"
                 :loadRecaptchaScript="true"
                 @verify="reChaptchaVerified"
-                @expired="reChaptcha.response = null"
+                @expired="reChaptchaExpired"
                 v-model="reChaptchaValid"
             />
           </div>
@@ -291,8 +295,32 @@ export default {
     reChaptchaVerified(response) {
       this.reChaptcha.response = response;
     },
+    reChaptchaExpired() {
+      this.reChaptcha.response = null
+      this.$emit('reChapchaExpired')
+    },
     onSubmit() {
-      this.$emit('submit', this.form, this.reChaptcha.response);
+      // Compile form data
+      let formData = new FormData();
+      formData.append('name', this.form.textual.name);
+      formData.append('address', this.form.textual.address);
+
+      if (this.form.textual.email) {
+        formData.append('email', this.form.textual.email);
+      }
+
+      if (this.form.textual.phone) {
+        formData.append('phone', this.form.textual.phone);
+      }
+
+      formData.append('text', this.form.textual.text);
+
+      this.attachments.forEach((attachment, idx) => {
+        formData.append(`attachment[${idx}]`, attachment);
+      });
+
+      // Emit submit event
+      this.$emit('submit', formData, this.reChaptcha.response);
     },
     saveForm() {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(this.form.textual));

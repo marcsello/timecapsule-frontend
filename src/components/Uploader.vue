@@ -7,7 +7,11 @@
           Feltöltés
         </h1>
 
-        <uploader-form :active="uploaderState === UploaderStates.EDITING" @submit="onSubmit"/>
+        <uploader-form
+            :active="uploaderState === UploaderStates.EDITING"
+            @submit="onSubmit"
+            @reChapchaExpired="onReChapchaExpired"
+        />
 
       </b-card>
 
@@ -92,7 +96,7 @@ export default {
       UploaderStates,
       uploadProgress: null,
       uploaderState: UploaderStates.EDITING,
-      form: null,
+      formData: null,
       reChaptchaResponse: null
     }
   },
@@ -102,8 +106,8 @@ export default {
         this.$refs.overlay_confirm_dialog.focus()
       }
     },
-    onSubmit(form, reChaptchaResponse) {
-      this.form = form;
+    onSubmit(formData, reChaptchaResponse) {
+      this.formData = formData;
       this.reChaptchaResponse = reChaptchaResponse;
       this.uploaderState = UploaderStates.CONFIRMING;
     },
@@ -113,29 +117,15 @@ export default {
     onOverlayConfirm() {
       this.performUpload();
     },
+    onReChapchaExpired() {
+      // TODO: This won't be fired, because v-if removes the object!
+      if (this.uploaderState === UploaderStates.CONFIRMING) {
+        this.uploaderState = UploaderStates.EDITING;
+      }
+    },
     performUpload() {
       this.uploadProgress = null;
       this.uploaderState = UploaderStates.UPLOADING;
-
-      // Compile form data
-      let formData = new FormData();
-      formData.append('name', this.form.textual.name);
-      formData.append('address', this.form.textual.address);
-
-      if (this.form.textual.email) {
-        formData.append('email', this.form.textual.email);
-      }
-
-      if (this.form.textual.phone) {
-        formData.append('phone', this.form.textual.phone);
-      }
-
-      formData.append('text', this.form.textual.text);
-
-      // TODO: attachements
-      //if (this.form.attachment) {
-//        formData.append('attachment', this.form.attachment);
-  //    }
 
       // Prepare upload
 
@@ -157,7 +147,7 @@ export default {
       // Perform upload
 
       axios.post(
-          '/upload', formData, config
+          '/upload', this.formData, config
       ).then(() => {
         // TODO: check response
         this.uploaderState = UploaderStates.SUCCESS;
