@@ -6,7 +6,7 @@
       </h2>
       <p>
         Szöveges információ beírható az szövegdobozba közvetlenül, de feltölthető bármely szövegszerkesztövel készített
-        fájl is (pl. txt, doc, pdf stb.).
+        fájl is (txt, doc, docx, odt, pdf).
       </p>
       <p>
         Képek bármely jelenleg szabványos formátumban feltölthetőek. Ajánljuk a jpg. formátumot és, hogy egy-egy
