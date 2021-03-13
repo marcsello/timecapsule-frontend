@@ -132,9 +132,10 @@ export default {
 
       formData.append('text', this.form.textual.text);
 
-      if (this.form.attachment) {
-        formData.append('attachment', this.form.attachment);
-      }
+      // TODO: attachements
+      //if (this.form.attachment) {
+//        formData.append('attachment', this.form.attachment);
+  //    }
 
       // Prepare upload
 

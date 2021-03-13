@@ -135,18 +135,11 @@
             id="input-group-attachment"
             label="Csatolmány:"
             label-for="input-attachment"
-            description="(Max.: 512Mb)"
+            description="Kép vagy szöveg fájlok, max 10 Mb/darab"
         >
-          <b-form-file
-              id="input-attachment"
-              v-model="form.attachment"
-              placeholder="Válasszon vagy ejtsen ide egy fájlt..."
-              drop-placeholder="Ejtse ide a fájlt..."
-              browse-text="Tallózás"
-              size="lg"
-              :disabled="!active"
-              :state="getValidationState(validationContext)"
-              @change="validationContext.validate($event)"
+          <multiple-file-select
+            id="input-attachment"
+            v-model="form.attachments"
           />
           <b-form-invalid-feedback id="input-attachement-live-feedback">
             {{ validationContext.errors[0] }}
@@ -221,6 +214,8 @@ import {ValidationProvider, ValidationObserver, extend, setInteractionMode} from
 import {required, email, size, max} from 'vee-validate/dist/rules';
 import _ from 'lodash';
 
+import MultipleFileSelect from "@/components/MultipleFileSelect";
+
 const LOCAL_STORAGE_KEY = "form";
 
 // --- setup vee-validate
@@ -262,7 +257,8 @@ export default {
   components: {
     VueRecaptcha,
     ValidationProvider,
-    ValidationObserver
+    ValidationObserver,
+    MultipleFileSelect
   },
   props: {
     active: {
@@ -283,7 +279,7 @@ export default {
           text: null
         },
         privacy_policy_accepted: false,
-        attachment: null
+        attachments: []
       },
       reChaptcha: {
         siteKey: process.env.VUE_APP_RECHAPTCHA_SITEKEY,
