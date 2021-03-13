@@ -11,12 +11,18 @@
             :active="uploaderState === UploaderStates.EDITING"
             @submit="onSubmit"
             @reChapchaExpired="onReChapchaExpired"
+            ref="uploaderForm"
         />
 
       </b-card>
 
 
-      <b-overlay :show="uploaderState !== UploaderStates.EDITING" no-wrap @shown="onOverlayShown">
+      <b-overlay
+          :show="uploaderState !== UploaderStates.EDITING"
+          no-wrap
+          @shown="onOverlayShown"
+          :opacity="0.92"
+      >
         <template #overlay>
           <!-- Uploader progress -->
           <div v-if="uploaderState === UploaderStates.UPLOADING" class="text-center rounded">
@@ -65,7 +71,7 @@
             <p><strong>Sikertelen feltöltés!</strong></p>
             <p>Úgy tűnik, valami hiba történt, próbálja újra később.</p>
             <div class="d-flex justify-content-center">
-              <b-button variant="outline-warning" @click="onOverlayCancel">Vissza</b-button>
+              <b-button variant="outline-warning" @click="onReturnAfterFailure">Vissza</b-button>
             </div>
           </div>
         </template>
@@ -114,6 +120,10 @@ export default {
     onOverlayCancel() {
       this.uploaderState = UploaderStates.EDITING;
     },
+    onReturnAfterFailure() {
+      this.uploaderState = UploaderStates.EDITING;
+      this.$refs.uploaderForm.resetReChaptcha();
+    },
     onOverlayConfirm() {
       this.performUpload();
     },
@@ -150,7 +160,7 @@ export default {
       ).then(() => {
         // TODO: check response
         this.uploaderState = UploaderStates.SUCCESS;
-        localStorage.removeItem('form'); // TODO: Ez nagyon nem lesz itt jó
+        this.$refs.uploaderForm.eraseSave()
       }).catch(() => {
         this.uploaderState = UploaderStates.FAIL;
       });

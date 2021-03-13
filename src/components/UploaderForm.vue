@@ -196,6 +196,7 @@
                 @expired="reChaptchaExpired"
                 v-model="reChaptchaValid"
                 v-show="active"
+                ref="reChaptchaInstance"
             />
           </div>
           <b-form-invalid-feedback :state="getValidationState(validationContext)" id="input-privacy-live-feedback">
@@ -328,6 +329,15 @@ export default {
     getValidationState({validated, valid = null}) {
       return validated ? (valid ? null : false) : null;
     },
+    resetReChaptcha() {
+      // called externally
+      this.$refs.reChaptchaInstance.reset();
+      this.reChaptcha.response = null;
+    },
+    eraseSave() {
+      // called externally
+      localStorage.removeItem(LOCAL_STORAGE_KEY);
+    }
   },
   created() {
     // Used to schedule save operations
