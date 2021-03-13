@@ -1,18 +1,19 @@
 <template>
   <div>
-    <b-list-group>
+    <b-list-group :class="{listGroupInvalid: state === false, listGroupValid: state === true}">
       <b-list-group-item
           v-for="(item,idx) in items"
           :key="idx"
           class="d-flex justify-content-between align-items-center"
           :variant="getListItemVariant(idx)"
       >
-        <div class>{{ item.name }}
+        <div>
+          {{ item.name }}
           <b-badge
               :variant="item.size > maxSizePerFile ? 'danger' : 'secondary'"
           >{{ bytesToSize(item.size) }}</b-badge>
         </div>
-        <b-button size="sm" variant="outline-danger" @click="removeItem(idx)">
+        <b-button size="sm" variant="outline-danger" @click="removeItem(idx)" :disabled="disabled">
           <b-icon icon="trash"/>
         </b-button>
       </b-list-group-item>
@@ -28,7 +29,7 @@
       >
 
 
-        <input :accept="accept" ref="fileInputField" type="file" id="items" multiple @change="onChange">
+        <input :accept="accept" :disabled="disabled" ref="fileInputField" type="file" id="items" multiple @change="onChange">
         <h3>{{ uploaderHelpText }}</h3>
         <h4>Vagy kattintson a tallózáshoz</h4>
 
@@ -53,6 +54,14 @@ export default {
     accept: {
       type: String,
       default: ""
+    },
+    state: {
+      type: Boolean,
+      default: null
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -133,6 +142,14 @@ export default {
   width: 100%;
   height: 100%;
   opacity: 0;
+}
+
+.listGroupInvalid > div {
+  border-color: #dc3545;
+}
+
+.listGroupValid > div {
+  border-color: green;
 }
 
 </style>
