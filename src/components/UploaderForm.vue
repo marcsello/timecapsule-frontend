@@ -345,12 +345,6 @@ export default {
         this.debouncedSave();
       },
       deep: true
-    },
-    active(newValue) {
-      if (newValue) {
-        // Clear value on activation
-        this.reChaptcha.response = null;
-      }
     }
   },
   computed: {

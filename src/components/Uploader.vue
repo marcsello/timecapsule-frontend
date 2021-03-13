@@ -118,7 +118,6 @@ export default {
       this.performUpload();
     },
     onReChapchaExpired() {
-      // TODO: This won't be fired, because v-if removes the object!
       if (this.uploaderState === UploaderStates.CONFIRMING) {
         this.uploaderState = UploaderStates.EDITING;
       }
