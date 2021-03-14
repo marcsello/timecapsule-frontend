@@ -34,7 +34,7 @@ export default {
         {key: 'name', sortable: true},
         {key: 'address', sortable: true},
         {key: 'text_length', sortable: false},
-        {key: 'have_attachment', sortable: false}
+        {key: 'attachment_count', sortable: false}
       ]
     }
   },

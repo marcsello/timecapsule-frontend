@@ -17,14 +17,18 @@
 
         <p><b>Az üzenet szövege:</b></p>
         <p id="displayed-upload-text">{{ displayed_upload.text }}</p>
-        <div v-if="displayed_upload.have_attachment">
-          <p><b>Csatolmány:</b></p>
-          <p>Hash: {{ displayed_upload.attachment_hash }}</p>
-          <p>Fájlnév: {{ displayed_upload.attachment_original_filename }}</p>
-          <div class="d-flex justify-content-center">
-            <!-- TODO: Solve download -->
-            <b-button variant="primary">Letöltés</b-button>
-          </div>
+        <div v-if="displayed_upload.attachment_count > 0">
+          <p><b>Csatolmány(ok):</b></p>
+          <ol>
+            <li class="py-2" v-for="(file,idx) in displayed_upload.files" :key="idx">
+              <ul>
+                <li><b>Fájlnév:</b> {{ file.original_filename }}</li>
+                <li><b>Hash:</b> {{ file.md5_hash }}</li>
+                <li><b>Méret:</b> {{ file.size }} Byte</li>
+                <li><b>MIME Típus:</b> {{ file.mime }}</li>
+              </ul>
+            </li>
+          </ol>
         </div>
       </div>
     </b-modal>
@@ -51,18 +55,25 @@ export default {
       key: null,
       uploads: [],
       displayed_upload: {
-        id: null,
-        name: null,
-        address: null,
-        attachment_hash: null,
-        attachment_original_filename: null,
-        attachment_url: null,
-        have_attachment: false,
-        text: null,
+        id: 0,
+        name: "",
+        address: "",
+        email: null,
+        phone: null,
         text_length: 0,
-        upload_date: null
+        text: "",
+        attachment_count: 1,
+        files: [
+          {
+            id: 0,
+            md5_hash: "",
+            mime: "",
+            original_filename: "",
+            size: 0
+          }
+        ],
+        upload_date: ""
       }
-
     }
   },
   methods: {
