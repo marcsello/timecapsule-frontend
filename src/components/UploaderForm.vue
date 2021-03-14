@@ -19,6 +19,7 @@
               placeholder=""
               :disabled="!active"
               :state="getValidationState(validationContext)"
+              autocomplete="name"
           />
           <b-form-invalid-feedback id="input-name-live-feedback">
             {{ validationContext.errors[0] }}
@@ -44,6 +45,7 @@
               placeholder=""
               :state="getValidationState(validationContext)"
               :disabled="!active"
+              autocomplete="address-line1"
           />
           <b-form-invalid-feedback id="input-address-live-feedback">
             {{ validationContext.errors[0] }}
@@ -68,6 +70,7 @@
               placeholder=""
               :state="getValidationState(validationContext)"
               :disabled="!active"
+              autocomplete="email"
           />
           <b-form-invalid-feedback id="input-email-live-feedback">
             {{ validationContext.errors[0] }}
@@ -92,6 +95,7 @@
               placeholder=""
               :state="getValidationState(validationContext)"
               :disabled="!active"
+              autocomplete="tel"
           />
           <b-form-invalid-feedback id="input-phone-live-feedback">
             {{ validationContext.errors[0] }}
@@ -119,6 +123,7 @@
               max-rows="8"
               :disabled="!active"
               :state="getValidationState(validationContext)"
+              autocomplete="off"
           />
           <b-form-invalid-feedback id="input-text-live-feedback">
             {{ validationContext.errors[0] }}
