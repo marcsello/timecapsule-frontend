@@ -69,7 +69,7 @@
               <b-icon variant="danger" icon="x-circle" font-scale="4"/>
             </p>
             <p><strong>Sikertelen feltöltés!</strong></p>
-            <p>Úgy tűnik, valami hiba történt, próbálja újra később.</p>
+            <p>{{ errorMessage }}</p>
             <div class="d-flex justify-content-center">
               <b-button variant="outline-warning" @click="onReturnAfterFailure">Vissza</b-button>
             </div>
@@ -103,7 +103,8 @@ export default {
       uploadProgress: null,
       uploaderState: UploaderStates.EDITING,
       formData: null,
-      reChaptchaResponse: null
+      reChaptchaResponse: null,
+      errorMessage: ""
     }
   },
   methods: {
@@ -122,6 +123,7 @@ export default {
     },
     onReturnAfterFailure() {
       this.uploaderState = UploaderStates.EDITING;
+      this.errorMessage = "";
       this.$refs.uploaderForm.resetReChaptcha();
     },
     onOverlayConfirm() {
@@ -158,11 +160,30 @@ export default {
       axios.post(
           '/upload', this.formData, config
       ).then(() => {
-        // TODO: check response
         this.uploaderState = UploaderStates.SUCCESS;
         this.$refs.uploaderForm.eraseSave()
-      }).catch(() => {
+      }).catch((error) => {
         this.uploaderState = UploaderStates.FAIL;
+
+        if (error.response) {
+
+          switch (error.response.status) {
+            case 422:
+              this.errorMessage = "Úgy tűnik valami hiba van a bevitt adatokban vagy a csatolt fájlok közt. (Előfordulhat, hogy az egyik feltölteni kívánt fájl sérült vagy hibás?)";
+              break;
+            case 413:
+              this.errorMessage = "Úgy tűnik a feltölteni szánt adat mennyiség túl nagy.";
+              break;
+            default:
+              this.errorMessage = "Ismeretlen szerver hiba történt. Próbálja újra később!";
+              break;
+          }
+
+        } else {
+          this.errorMessage = "Szerver vagy kapcsolat hiba történt. Ellenőrizze az internet kapcsolatát és próbálja újra!";
+        }
+
+
       });
 
     }
