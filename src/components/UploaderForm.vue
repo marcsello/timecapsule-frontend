@@ -127,8 +127,8 @@
       </validation-provider>
 
       <validation-provider
-          name="attachement"
-          rules="size:524288"
+          name="attachment"
+          rules="size_individual:10485760|max_files:10|size_sum:536870912"
           v-slot="validationContext"
       >
         <b-form-group
@@ -141,16 +141,18 @@
               id="input-attachment"
               v-model="form.attachments"
               :disabled="!active"
-              @change="validationContext.validate($event)"
+              @change="validationContext.validate"
+              :maxItems="10"
+              :state="getValidationState(validationContext)"
           />
-          <b-form-invalid-feedback id="input-attachement-live-feedback">
+          <b-form-invalid-feedback :state="getValidationState(validationContext)" id="input-attachement-live-feedback">
             {{ validationContext.errors[0] }}
           </b-form-invalid-feedback>
         </b-form-group>
       </validation-provider>
 
       <validation-provider
-          name="attachement"
+          name="privacy"
           rules="must_accept"
           v-slot="validationContext"
       >
@@ -216,7 +218,7 @@
 <script>
 import VueRecaptcha from 'vue-recaptcha';
 import {ValidationProvider, ValidationObserver, extend, setInteractionMode} from 'vee-validate';
-import {required, email, size, max} from 'vee-validate/dist/rules';
+import {required, email, max} from 'vee-validate/dist/rules';
 import _ from 'lodash';
 
 import MultipleFileSelect from "@/components/MultipleFileSelect";
@@ -234,10 +236,28 @@ extend('email', {
   ...email,
   message: "Érvénytelen e-mail cím!"
 });
-extend('size', {
-  ...size,
-  message: "A fájl mérete túl nagy!"
+
+extend('size_sum', {
+  validate(value, {maxsize}) {
+    let sum_size = 0;
+    value.forEach((item) => {
+      sum_size += item.size;
+    });
+    console.log(`sum_size ${sum_size} of ${maxsize} ${sum_size < maxsize}`);
+    return sum_size < maxsize;
+  },
+  params: ['maxsize'],
+  message: "A teljes méret túl nagy!"
 });
+
+extend('size_individual', {
+  validate(value, {maxsize}) {
+    return value.every((item) => item.size <= maxsize);
+  },
+  params: ['maxsize'],
+  message: "Az egyik fájl mérete túl nagy!"
+});
+
 const phone_regex = new RegExp("^\\+?[0-9]{6,13}$");
 extend('phone', {
   validate(value) {
@@ -245,16 +265,26 @@ extend('phone', {
   },
   message: "Érvénytelen telefonszám!"
 });
+
 extend('max', {
   ...max,
   message: "Túl hosszú!"
 });
+
+extend('max_files', {
+  validate(values, {max}) {
+    return values.length <= max;
+  },
+  params: ['max'],
+  message: "Túl sok feltöltendő fájl!"
+});
+
 extend('must_accept', {
   validate(value) {
-    return value;
+    return !!value;
   },
   message: "Kötelező elfogadni!"
-})
+});
 // --- end of vee-validate stuff
 
 export default {
