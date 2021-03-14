@@ -143,6 +143,7 @@
               :disabled="!active"
               @change="validationContext.validate"
               :maxItems="10"
+              :maxSizePerItem="10485760"
               :state="getValidationState(validationContext)"
           />
           <b-form-invalid-feedback :state="getValidationState(validationContext)" id="input-attachement-live-feedback">
