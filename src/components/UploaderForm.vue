@@ -3,7 +3,7 @@
     <b-form novalidate @submit.prevent="handleSubmit(onSubmit)">
       <validation-provider
           name="name"
-          rules="required|max:128"
+          rules="required|max:128|human_name"
           v-slot="validationContext"
       >
         <b-form-group
@@ -275,6 +275,16 @@ extend('phone', {
   },
   message: "Érvénytelen telefonszám!"
 });
+
+const human_name_regex = new RegExp("^[^0-9@]*$");
+extend('human_name', {
+  validate(value) {
+    return human_name_regex.test(value);
+  },
+  message: "Érvénytelen név!"
+});
+// so, anyway... human names should not be validated at all...
+// This check is only here to prevent common human errors (typing wrong data in wrong fields)
 
 extend('max', {
   ...max,
