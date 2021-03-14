@@ -10,7 +10,7 @@
         <div>
           {{ item.name }}
           <b-badge
-              :variant="item.size > maxSizePerItem ? 'danger' : 'secondary'"
+              :variant="getSizeBadgeVariant(idx)"
           >{{ bytesToSize(item.size) }}
           </b-badge>
         </div>
@@ -53,6 +53,10 @@ export default {
     maxSizePerItem: {
       type: Number,
       default: 10485760 // 10MB
+    },
+    minSizePerItem: {
+      type: Number,
+      default: 0
     },
     maxItems: {
       type: Number,
@@ -127,6 +131,14 @@ export default {
     },
     getListItemVariant(idx) {
       return (idx + 1) > this.maxItems ? 'warning' : ''
+    },
+    getSizeBadgeVariant(idx) {
+      const item = this.items[idx];
+      if (item.size > this.maxSizePerItem || item.size < this.minSizePerItem) {
+        return 'danger';
+      } else {
+        return 'secondary';
+      }
     }
   },
   computed: {

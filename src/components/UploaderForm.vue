@@ -128,7 +128,7 @@
 
       <validation-provider
           name="attachment"
-          rules="size_individual:10485760|max_files:10|size_sum:536870912"
+          rules="size_max_individual:10485760|max_files:10|size_max_sum:536870912|size_min_individual:1"
           v-slot="validationContext"
       >
         <b-form-group
@@ -144,6 +144,7 @@
               @change="validationContext.validate"
               :maxItems="10"
               :maxSizePerItem="10485760"
+              :minSizePerItem="1"
               :state="getValidationState(validationContext)"
               accept="image/*,.doc,.docx,.odt,.txt,.pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,application/vnd.oasis.opendocument.text,application/pdf"
           />
@@ -239,7 +240,7 @@ extend('email', {
   message: "Érvénytelen e-mail cím!"
 });
 
-extend('size_sum', {
+extend('size_max_sum', {
   validate(value, {maxsize}) {
     let sum_size = 0;
     value.forEach((item) => {
@@ -251,12 +252,20 @@ extend('size_sum', {
   message: "A teljes méret túl nagy!"
 });
 
-extend('size_individual', {
+extend('size_max_individual', {
   validate(value, {maxsize}) {
     return value.every((item) => item.size <= maxsize);
   },
   params: ['maxsize'],
   message: "Az egyik fájl mérete túl nagy!"
+});
+
+extend('size_min_individual', {
+  validate(value, {minsize}) {
+    return value.every((item) => item.size >= minsize);
+  },
+  params: ['minsize'],
+  message: "Az egyik fájl üres!"
 });
 
 const phone_regex = new RegExp("^\\+?[0-9]{6,13}$");
