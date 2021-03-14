@@ -8,7 +8,7 @@
           :variant="getListItemVariant(idx)"
       >
         <div>
-          {{ item.name }}
+          <div class="d-inline-block mr-2 file-name">{{ item.name }}</div>
           <b-badge
               :variant="getSizeBadgeVariant(idx)"
           >{{ bytesToSize(item.size) }}
@@ -225,6 +225,10 @@ export default {
 
 .listGroupValid > div {
   border-color: green;
+}
+
+div.file-name {
+  word-break: break-all;
 }
 
 </style>
