@@ -77,16 +77,37 @@ export default {
   },
   data() {
     return {
-      dragging: false
+      dragging: false,
+      validator: {
+        tokens: {
+          ext: [],
+          mime: []
+        }
+      }
     }
   },
   methods: {
+    validateFileAccept(file) {
+      if (!this.accept) {
+        return true;
+      }
+      const extension_extractor = /(?:\.([^.]+))?$/;
+      const extension = extension_extractor.exec(file.name)[0];
+
+      return this.validator.tokens.ext.some((token) => {
+        return extension === token;
+      }) || this.validator.tokens.mime.some((token) => {
+        return token.test(file.type);
+      })
+    },
     onChange(e) {
       this.dragging = false;
       let files = e.target.files || e.dataTransfer.files;
       let mutableItems = _.clone(this.items);
       files.forEach((file) => {
-        mutableItems.push(file);
+        if (this.validateFileAccept(file)) {
+          mutableItems.push(file);
+        }
       });
       this.$emit('change', mutableItems);
       this.$refs.fileInputField.value = ""; // reset
@@ -117,6 +138,34 @@ export default {
         return "Húzza ide a feltölteni kívánt fájlokat";
       } else {
         return "Húzza ide a további fájlokat";
+      }
+    }
+  },
+  watch: {
+    accept: {
+      immediate: true,
+      handler(value) {
+
+        if(!value) {
+          // do nothing on empty value
+          return;
+        }
+
+        // Setup file validator
+        const tokens = this.accept.split(',').map(x => x.trim());
+        this.validator.tokens.ext = [];
+        this.validator.tokens.mime = [];
+        tokens.forEach((token) => {
+          if (token[0] === '.') {
+            // Extension check
+            this.validator.tokens.ext.push(token);
+          } else {
+            // Mime check
+            const mime_test = new RegExp(token.replace('*', '[^\\/,]+'));
+            this.validator.tokens.mime.push(mime_test);
+          }
+        });
+
       }
     }
   }

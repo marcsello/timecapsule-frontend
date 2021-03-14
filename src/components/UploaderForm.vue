@@ -145,6 +145,7 @@
               :maxItems="10"
               :maxSizePerItem="10485760"
               :state="getValidationState(validationContext)"
+              accept="image/*,.doc,.docx,.odt,.txt,.pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,application/vnd.oasis.opendocument.text,application/pdf"
           />
           <b-form-invalid-feedback :state="getValidationState(validationContext)" id="input-attachement-live-feedback">
             {{ validationContext.errors[0] }}
@@ -244,7 +245,6 @@ extend('size_sum', {
     value.forEach((item) => {
       sum_size += item.size;
     });
-    console.log(`sum_size ${sum_size} of ${maxsize} ${sum_size < maxsize}`);
     return sum_size < maxsize;
   },
   params: ['maxsize'],
