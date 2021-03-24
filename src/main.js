@@ -26,7 +26,6 @@ Vue.prototype.$notifyHeightChange = function (height = undefined) {
         frameHeight: h
     }, '*');
 
-    console.log(h);
 };
 
 Vue.use(BootstrapVue);
