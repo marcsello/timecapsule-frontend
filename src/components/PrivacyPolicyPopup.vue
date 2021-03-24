@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="privacy-policy-popup" scrollable hide-footer title="Adatkezelési tájékoztató" size="lg">
+  <b-modal id="privacy-policy-popup" scrollable hide-footer title="Adatkezelési tájékoztató" size="xl">
     <ol class="paragraphs">
       <li>
         Nagyatád Város Önkormányzata megbízásából a Nagyatád Kulturális és Sport Központ végzi az időkapszulába

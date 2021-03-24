@@ -1,6 +1,10 @@
 <template>
   <div id="admin">
 
+    <navbar/>
+
+    <div id="content">
+
     <b-modal id="modal-upload-content" size="lg" scrollable centered ok-only :title="modalTitle">
       <div id="modal-upload-content-content">
         <p><b>Azonosító:</b></p>
@@ -37,18 +41,30 @@
       <admin-keyfield @submit="onSubmit"/>
       <admin-lister :uploads="uploads" @showItem="onShowItem"/>
     </b-container>
+
+
+    </div>
+
+    <div id="footer">
+      <b-container>
+        <footer-content/>
+      </b-container>
+    </div>
+
   </div>
 </template>
 
 <script>
 import AdminLister from "@/components/AdminLister";
 import AdminKeyfield from "@/components/AdminKeyfield";
+import Navbar from "@/components/Navbar";
+import FooterContent from "@/components/FooterContent"
 import axios from "axios";
 
 export default {
   name: "Admin",
   components: {
-    AdminKeyfield, AdminLister
+    AdminKeyfield, AdminLister, Navbar, FooterContent
   },
   data() {
     return {
@@ -138,5 +154,22 @@ export default {
 
 #displayed-upload-text {
   white-space: pre-wrap;
+}
+
+#admin {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+#content {
+  margin-top: 70px;
+  margin-bottom: 20px;
+}
+
+#footer {
+  padding: 1em;
+  margin-top: auto;
+  background: #E9ECEF;
 }
 </style>
