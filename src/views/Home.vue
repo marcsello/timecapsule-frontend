@@ -1,5 +1,5 @@
 <template>
-  <uploader/>
+  <uploader v-resize @resize="onResize"/>
 </template>
 
 <script>
@@ -18,6 +18,11 @@ export default {
   },
   destroyed() {
     window.removeEventListener("resize", () => this.$notifyHeightChange());
+  },
+  methods: {
+    onResize(e) {
+      this.$notifyHeightChange(e.detail.height);
+    }
   }
 }
 </script>
