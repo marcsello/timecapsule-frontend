@@ -133,25 +133,25 @@
 
       <validation-provider
           name="attachment"
-          rules="size_max_individual:10485760|max_files:10|size_max_sum:536870912|size_min_individual:1"
+          rules="size_max_individual:838860800|max_files:7|size_max_sum:1073741824|size_min_individual:1"
           v-slot="validationContext"
       >
         <b-form-group
             id="input-group-attachment"
             label="Csatolmány:"
             label-for="input-attachment"
-            description="Kép vagy szöveg fájlok, max 10 Mb/darab"
+            description="Kép, videó vagy szöveg fájlok. Maximum 800 Mb/darab de összesen maxium 1Gb. 7db fájl maximum."
         >
           <multiple-file-select
               id="input-attachment"
               v-model="form.attachments"
               :disabled="!active"
               @change="validationContext.validate"
-              :maxItems="10"
-              :maxSizePerItem="10485760"
+              :maxItems="7"
+              :maxSizePerItem="838860800"
               :minSizePerItem="1"
               :state="getValidationState(validationContext)"
-              accept="image/*,.doc,.docx,.odt,.txt,.pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,application/vnd.oasis.opendocument.text,application/pdf"
+              accept="image/*,video/*,.mkv,.doc,.docx,.odt,.txt,.pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,application/vnd.oasis.opendocument.text,application/pdf"
           />
           <b-form-invalid-feedback :state="getValidationState(validationContext)" id="input-attachement-live-feedback">
             {{ validationContext.errors[0] }}
