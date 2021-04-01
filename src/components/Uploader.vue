@@ -19,58 +19,61 @@
     <b-overlay
         :show="uploaderState !== UploaderStates.EDITING"
         no-wrap
+        no-center
         @shown="onOverlayShown"
         :opacity="0.92"
     >
       <template #overlay>
-        <!-- Uploader progress -->
-        <div v-if="uploaderState === UploaderStates.UPLOADING" class="text-center rounded">
-          <div class="mb-3">Feltöltés folyamatban...</div>
-          <b-progress
-              v-if="uploadProgress !== null || uploadProgress < 100"
-              min="0"
-              max="100"
-              :value="uploadProgress"
-              variant="success"
-          />
-          <b-spinner v-else/>
-        </div>
-        <!-- Confirmation -->
-        <div
-            v-else-if="uploaderState === UploaderStates.CONFIRMING"
-            ref="overlay_confirm_dialog"
-            tabindex="-1"
-            role="dialog"
-            aria-modal="false"
-            aria-labelledby="form-confirm-label"
-            class="text-center p-3"
-        >
-          <p><strong id="form-confirm-label">Biztos benne?</strong></p>
-          <p>Miután a feltöltés gombra kattintott, már nincs lehetősége visszavonni vagy módosítani a leadást!</p>
-          <div class="d-flex justify-content-center">
-            <b-button variant="outline-danger" class="mr-3" @click="onOverlayCancel">
-              Mégse
-            </b-button>
-            <b-button variant="outline-success" @click="onOverlayConfirm">Feltöltés</b-button>
+        <div class="position-absolute bottom-placed-feedback">
+          <!-- Uploader progress -->
+          <div v-if="uploaderState === UploaderStates.UPLOADING" class="text-center rounded">
+            <div class="mb-3">Feltöltés folyamatban...</div>
+            <b-progress
+                v-if="uploadProgress !== null || uploadProgress < 100"
+                min="0"
+                max="100"
+                :value="uploadProgress"
+                variant="success"
+            />
+            <b-spinner v-else/>
           </div>
-        </div>
-        <!-- Upload completed -->
-        <div v-else-if="uploaderState === UploaderStates.SUCCESS" class="text-center">
-          <p>
-            <b-icon variant="success" icon="check-circle" font-scale="4"/>
-          </p>
-          <p><strong>Sikeres feltöltés!</strong></p>
-          <p>Köszönjük, hogy személyes üzenetével hozzájárul ünnepi programjaink gazdagabbá tételéhez!</p>
-        </div>
-        <!-- Upload failed -->
-        <div v-else class="text-center">
-          <p>
-            <b-icon variant="danger" icon="x-circle" font-scale="4"/>
-          </p>
-          <p><strong>Sikertelen feltöltés!</strong></p>
-          <p>{{ errorMessage }}</p>
-          <div class="d-flex justify-content-center">
-            <b-button variant="outline-warning" @click="onReturnAfterFailure">Vissza</b-button>
+          <!-- Confirmation -->
+          <div
+              v-else-if="uploaderState === UploaderStates.CONFIRMING"
+              ref="overlay_confirm_dialog"
+              tabindex="-1"
+              role="dialog"
+              aria-modal="false"
+              aria-labelledby="form-confirm-label"
+              class="text-center p-3"
+          >
+            <p><strong id="form-confirm-label">Biztos benne?</strong></p>
+            <p>Miután a feltöltés gombra kattintott, már nincs lehetősége visszavonni vagy módosítani a leadást!</p>
+            <div class="d-flex justify-content-center">
+              <b-button variant="outline-danger" class="mr-3" @click="onOverlayCancel">
+                Mégse
+              </b-button>
+              <b-button variant="outline-success" @click="onOverlayConfirm">Feltöltés</b-button>
+            </div>
+          </div>
+          <!-- Upload completed -->
+          <div v-else-if="uploaderState === UploaderStates.SUCCESS" class="text-center">
+            <p>
+              <b-icon variant="success" icon="check-circle" font-scale="4"/>
+            </p>
+            <p><strong>Sikeres feltöltés!</strong></p>
+            <p>Köszönjük, hogy személyes üzenetével hozzájárul ünnepi programjaink gazdagabbá tételéhez!</p>
+          </div>
+          <!-- Upload failed -->
+          <div v-else class="text-center">
+            <p>
+              <b-icon variant="danger" icon="x-circle" font-scale="4"/>
+            </p>
+            <p><strong>Sikertelen feltöltés!</strong></p>
+            <p>{{ errorMessage }}</p>
+            <div class="d-flex justify-content-center">
+              <b-button variant="outline-warning" @click="onReturnAfterFailure">Vissza</b-button>
+            </div>
           </div>
         </div>
       </template>
@@ -192,5 +195,11 @@ export default {
 <style scoped>
 .nomargin {
   margin: 0;
+}
+
+div.bottom-placed-feedback {
+  bottom: 7em;
+  left: 50%;
+  transform: translateX(-50%);
 }
 </style>
