@@ -8,6 +8,8 @@
             :items="uploads"
             :fields="fields"
             sort-icon-left
+            :sort-by.sync="sortBy"
+            :sort-desc.sync="sortDesc"
             primary-key="id"
             @row-clicked="onRowClick"
         ></b-table>
@@ -29,6 +31,8 @@ export default {
   },
   data() {
     return {
+      sortBy: 'id',
+      sortDesc: false,
       fields: [
         {key: 'id', sortable: true},
         {key: 'name', sortable: true},
